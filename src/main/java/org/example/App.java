@@ -4,41 +4,42 @@ import java.util.Random;
 
 public class App {
 
-    private static int winsPlayerA = 0;
-    private static int lossesPlayerA = 0;
-    private static int drawsPlayerA = 0;
     private final static Random random = new Random();
     private final static int NUMBER_OF_GAMES = 100;
+    private final static PlayerStatsPrinter printer = new PlayerStatsConsolePrinter(new PlayerStatsFormatter());
 
     public static void main(String[] args) {
+        PlayerStats playerAStats = new PlayerStats("Player A");
+        PlayerStats playerBStats = new PlayerStats("Player B");
+
         HandShape playerAShape = HandShape.PAPER;
+
         for (int i = 0; i < NUMBER_OF_GAMES; i++) {
             HandShape playerBShape = getRandomHandShape();
-            GameResult result = GameResult.gameResultForFirstPlayer(playerAShape, playerBShape);
+            GameResult gameResultPlayerA = playerAShape.gameResult(playerBShape);
 
-            switch (result) {
-                case WON -> winsPlayerA++;
-                case LOOSE -> lossesPlayerA++;
-                case DRAW -> drawsPlayerA++;
+            switch (gameResultPlayerA) {
+                case WON -> {
+                    playerAStats.wins++;
+                    playerBStats.losses++;
+                }
+                case LOOSE -> {
+                    playerAStats.losses++;
+                    playerBStats.wins++;
+                }
+                case DRAW -> {
+                    playerAStats.draws++;
+                    playerBStats.draws++;
+                }
             }
         }
 
-        printResults();
+        printer.print(playerAStats);
+        printer.print(playerBStats);
     }
 
     private static HandShape getRandomHandShape() {
         return HandShape.values()[random.nextInt(HandShape.values().length)];
     }
 
-    private static void printResults() {
-        System.out.println("Player A results:");
-        System.out.println("Wins: " + winsPlayerA);
-        System.out.println("Losses: " + lossesPlayerA);
-        System.out.println("Draws: " + drawsPlayerA);
-
-        System.out.println("\nPlayer B results:");
-        System.out.println("Wins: " + lossesPlayerA);
-        System.out.println("Losses: " + winsPlayerA);
-        System.out.println("Draws: " + drawsPlayerA);
-    }
 }
